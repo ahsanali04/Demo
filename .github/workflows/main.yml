@@ -1,0 +1,43 @@
+name: Release Android app
+on:
+  # push:
+  #   branches:
+  #     - develop
+  workflow_dispatch:
+  
+jobs:
+
+  release-android:
+    name: Release android app to development environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.16.0"
+
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+
+      - name: Install expo 
+        uses: expo/expo-github-action@v6
+        with:
+          expo-version: 6.3.8
+          expo-cache: true
+          eas-version: latest
+          token: ${{secrets.EXPO_TOKEN}}
+
+      - name: Install packages
+        run: npm install
+
+      - name: Build the app
+        run: eas build --platform android
